@@ -50,8 +50,24 @@ namespace Airline
     // Authentication: Windows Authentication
 
     public static string dataSource = "Data Source=(localdb)\\mssqllocaldb"; // Data Source identifies the server.
-    public static string databaseName = "database"; // Initial Catalog is the database name
+    public static string databaseName = "airline"; // Initial Catalog is the database name
     //Integrated Security sets the security of the database access to the Windows user that is currently logged in.
     public static string ConnectionString = ""+dataSource+";Initial Catalog="+databaseName+";Integrated Security=SSPI;";
+  }
+  class Airline
+  {
+    static void Main()
+    {
+      //
+      // 1. Type "Console" and press "."
+      // 2. Select "BackgroundColor".
+      // 3. Press space and "=", then press tab.
+      //
+      Console.BackgroundColor = ConsoleColor.Blue;
+      Console.ForegroundColor = ConsoleColor.Red;
+      Console.WriteLine("White on blue.");
+      Console.WriteLine("Another line."); // <-- This line is still white on blue.
+      Console.ResetColor();
+    }
   }
 }
