@@ -36,7 +36,7 @@ namespace Airline
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query = "SELECT * from cities;";
+      string query = "SELECT * FROM cities;";
       SqlCommand cmd = new SqlCommand(query,conn);
       SqlDataReader rdr = cmd.ExecuteReader();
 
@@ -68,7 +68,7 @@ namespace Airline
       SqlCommand cmd = new SqlCommand (query, conn);
       SqlParameter pam = new SqlParameter("@name", this.GetName());
       cmd.Parameters.Add(pam);
-      
+
 
       SqlDataReader rdr = cmd.ExecuteReader();
 
