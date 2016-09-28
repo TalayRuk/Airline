@@ -13,7 +13,7 @@ namespace Airline
     private string _status;
     private string _flightN;
 
-    pubic Flight(string status, string flightN, int id = 0)
+    public Flight(string status, string flightN, int id = 0)
     {
       _status = status;
       _flightN = flightN;
@@ -50,7 +50,9 @@ namespace Airline
       SqlCommand cmd = new SqlCommand("SELECT * FROM flights;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
       int id = 0;
-      string name = null;
+      string status = null;
+      string flightN = null;
+
       while ( rdr.Read() )
       {
         id = rdr.GetInt32(0);
@@ -77,9 +79,13 @@ namespace Airline
 
       string query = "INSERT INTO flights (status, flight_number) OUTPUT INSERTED.id VALUES (@status, @flightN);";
       SqlCommand cmd = new SqlCommand (query, conn);
-      SqlParameter statusParameter = new SqlParameter("@status", this.GetStatus());
-      SqlParameter flightNParameter = new SqlParameter("@flightN", this.GetFlightN());
-      cmd.Parameters.Add(statusParameter);
+      // SqlParameter statusParameter = new SqlParameter("@status", this.GetStatus());
+      // SqlParameter flightNParameter = new SqlParameter("@flightN", this.GetFlightN());
+      // cmd.Parameters.Add(statusParameter);
+      // cmd.Parameters.Add(flightNParameter);
+      cmd.Parameters.Add(new SqlParameter("@status", this.GetStatus()));
+      cmd.Parameters.Add(new SqlParameter("@flightN", this.GetFlightN()));
+
 
 
       SqlDataReader rdr = cmd.ExecuteReader();
@@ -97,26 +103,28 @@ namespace Airline
         conn.Close();
       }
     }
-    public static City Find(int id)
+    public static Flight Find(int id)
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query="SELECT * FROM cities WHERE id = @id;";
+      string query="SELECT * FROM flights WHERE id = @id;";
       SqlCommand cmd = new SqlCommand (query, conn);
-      SqlParameter idParameter = new SqlParameter("@id", id );
-      cmd.Parameters.Add(idParameter);
+      SqlParameter idParam = new SqlParameter("@id", id.ToString());
+      cmd.Parameters.Add(idParam);
       SqlDataReader rdr = cmd.ExecuteReader();
 
       int gotId = 0;
       string gotStatus = null;
+      string gotFlightN = null;
 
       while( rdr.Read() )
       {
         gotId = rdr.GetInt32(0);
         gotStatus = rdr.GetString(1);
+        gotFlightN = rdr.GetString(2);
       }
-      City city = new City (gotStatus, gotId);
+      Flight flight = new Flight (gotStatus, gotFlightN, gotId);
 
       if (rdr != null)
       {
@@ -126,7 +134,7 @@ namespace Airline
       {
         conn.Close();
       }
-      return city;
+      return flight;
     }
 
     public static void DeleteAll()
@@ -134,7 +142,7 @@ namespace Airline
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string nonQuery = "DELETE FROM cities;";
+      string nonQuery = "DELETE FROM flights;";
       SqlCommand cmd = new SqlCommand(nonQuery,conn);
       cmd.ExecuteNonQuery();
 
@@ -143,42 +151,40 @@ namespace Airline
         conn.Close();
       }
     }
-    // public void Update(string status, int stylist)
-    // {
-    //   SqlConnection conn = DB.Connection();
-    //   conn.Open();
-    //
-    //   string query = "UPDATE cities SET status=@status OUTPUT INSERTED.description, INSERTED.stylist WHERE id = @id;";
-    //   SqlCommand cmd = new SqlCommand(query,conn);
-    //   SqlParameter
-    //   cmd.Parameters.Add(
-    //   {
-    //     new SqlParameter( "@status", status ),
-    //     new SqlParameter( "@stylist", stylist ),
-    //     new SqlParameter( "@id", this.GetId() )
-    //   });
-    //   SqlDataReader rdr = cmd.ExecuteReader();
-    //   while ( rdr.Read() )
-    //   {
-    //     this._status = rdr.GetString(0);
-    //     this._stylist = rdr.GetInt32(1);
-    //   }
-    //
-    //   if (rdr != null)
-    //   {
-    //     rdr.Close();
-    //   }
-    //   if (conn != null)
-    //   {
-    //     conn.Close();
-    //   }
-    // }
+    public void Update(string status, string flightN, int id=0)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      string query = "UPDATE flights SET status = @status OUTPUT INSERTED.status WHERE id = @flightId;";
+      SqlCommand cmd = new SqlCommand(query, conn);
+      cmd.Parameters.Add(new SqlParameter( "@status", status ));
+      cmd.Parameters.Add(new SqlParameter( "@flightId", id.ToString() ));
+
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+
+      while ( rdr.Read() )
+      {
+        _status = rdr.GetString(0);
+      }
+
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
     public void Delete()
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query="DELETE FROM cities WHERE id = @id;";
+      string query="DELETE FROM flights WHERE id = @id;";
       SqlCommand cmd = new SqlCommand (query, conn);
       SqlParameter idParameter = new SqlParameter("id", this._id );
       cmd.Parameters.Add(idParameter);
@@ -190,21 +196,19 @@ namespace Airline
       }
     }
     //Overrides
-   public override bool Equals(System.Object otherCity)
+   public override bool Equals(System.Object otherFlight)
    {
-     if (!(otherCity is City))
+     if (!(otherFlight is Flight))
      {
        return false;
      }
      else
      {
-       City newCity = (City) otherCity;
-       bool statusEquality = ( newCity.GetStatus() == this.GetStatus() );
-
-       Console.WriteLine(newCity.GetStatus() );
-       Console.WriteLine(this.GetStatus() );
-       bool idEquality = ( newCity.GetId() == this.GetId() );
-       return ( idEquality && statusEquality);
+       Flight newFlight = (Flight) otherFlight;
+       bool statusEquality = ( newFlight.GetStatus() == this.GetStatus() );
+       bool flightNEquality = (newFlight.GetFlightN() == this.GetFlightN());
+       bool idEquality = ( newFlight.GetId() == this.GetId() );
+       return (idEquality && statusEquality && flightNEquality);
      }
    }
    public override int GetHashCode()
@@ -212,10 +216,4 @@ namespace Airline
      return this.GetStatus().GetHashCode();
    }
   }
-}
-
-    }
-
-  }
-
 }

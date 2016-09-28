@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Tests;
 
 namespace Airline
 {
@@ -59,6 +58,7 @@ namespace Airline
       }
       return listCities;
     }
+
     public void Save()
     {
       SqlConnection conn = DB.Connection();
@@ -68,7 +68,6 @@ namespace Airline
       SqlCommand cmd = new SqlCommand (query, conn);
       SqlParameter pam = new SqlParameter("@name", this.GetName());
       cmd.Parameters.Add(pam);
-
 
       SqlDataReader rdr = cmd.ExecuteReader();
 

@@ -3,9 +3,8 @@ using Xunit;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Airline;
 
-namespace Tests
+namespace Airline
 {
   public class CityTests : IDisposable
   {
@@ -97,7 +96,7 @@ namespace Tests
     public void Dispose()
     {
       City.DeleteAll();
-      //Flight.DeleteAll();
+      Flight.DeleteAll();
 
     }
   }
