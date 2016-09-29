@@ -1,11 +1,11 @@
 <h1>City</h1>
 <h2>City: @Model["city"].GetName()</h2>
 <hr />
-@if (@Model["citynames"].Count != 0)
+@if (@Model["cityFlights"].Count != 0)
 {
   <h4>There are these Flights in the city:</h4>
   <ul>
-    @foreach (var flight in @Model["citynames"])
+    @foreach (var flight in @Model["cityFlights"])
     {
       <li>@flight.GetFlightN()</li>
     }
@@ -16,7 +16,7 @@
   <input id='city-id' name='city-id' type='hidden' value='@Model["city"].GetId()'>
   <label for='flight-id'>Select a flight</label>
   <select id='flight-id' name='flight-id' type='text'>
-    @foreach (var flight in @Model["allflights"])
+    @foreach (var flight in @Model["allFlights"])
     {
       <option value='@flight.GetId()'>@flight.GetFlightN()</option>
     }

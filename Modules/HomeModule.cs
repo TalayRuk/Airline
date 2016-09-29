@@ -28,7 +28,7 @@ namespace Airline
       Post["/cities/new"] = _ => {
         City newCity = new City(Request.Form["city-name"]);
         newCity.Save();
-        return View["success.cshtml"];
+        return View["city_success.cshtml"];
       };
 
       //create a new flight1
@@ -39,7 +39,7 @@ namespace Airline
       Post["/flights/new"] =_=> {
         Flight newFlight = new Flight(Request.Form["flight-status"], Request.Form["flight-num"]);
         newFlight.Save();
-        return View["success.cshtml"];
+        return View["flight_success.cshtml"];
       };
 
       Get["cities/{id}"] = parameters => {
@@ -68,13 +68,14 @@ namespace Airline
         Flight flight = Flight.Find(Request.Form["flight-id"]);
         City city = City.Find(Request.Form["city-id"]);
         city.AddFlight(flight);
-        return View["success.cshtml"];
+        return View["city_success.cshtml"];
       };
+
       Post["flight/add_city"] = _ => {
       Flight flight = Flight.Find(Request.Form["flight-id"]);
       City city = City.Find(Request.Form["city-id"]);
       flight.AddCity(city);
-      return View["success.cshtml"];
+      return View["flight_success.cshtml"];
       };
 
     }

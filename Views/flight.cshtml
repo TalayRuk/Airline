@@ -7,7 +7,7 @@
 <ul>
 @foreach (var city in @Model["flightCities"])
 {
-<li>@city.GetDescription()</li>
+<li>@city.GetName()</li>
 }
 </ul>
 }
@@ -15,12 +15,12 @@
 <form action='/flight/add_city' method='post'>
 <input id='flight-id' name='flight-id' type='hidden' value='@Model["flight"].GetId()'>
 <label for='city-id'>Select a city</label>
-<select id='city-id' name='city-id' type='text'>
-@foreach (var city in @Model["allCities"])
-{
-<option value='@city.GetId()'>@city.GetName()</option>
-}
-</select>
+  <select id='city-id' name='city-id' type='text'>
+  @foreach (var city in @Model["allCities"])
+  {
+  <option value='@city.GetId()'>@city.GetName()</option>
+  }
+  </select>
 <button type='submit'>Add</button>
 </form>
 <p><a href="/">Return to Main Page</a></p>
