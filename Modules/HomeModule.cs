@@ -22,21 +22,22 @@ namespace Airline
         return View["flights.cshtml", AllFlights];
       };
       //Create a new City
-      Get["/cities/new"] =_=> {
+      Get["/cities/new"] = _ => {
         return View["cities_form.cshtml"];
       };
-      Post["/cities/new"] =_=> {
+      Post["/cities/new"] = _ => {
         City newCity = new City(Request.Form["city-name"]);
         newCity.Save();
         return View["success.cshtml"];
       };
 
       //create a new flight1
-      Get["/flights/new"] =_=> {
+      Get["/flights/new"] = _ => {
         return View["flights_form.cshtml"];
       };
+
       Post["/flights/new"] =_=> {
-        Flight newFlight = new Flight(Request.Form["flight-status"], Request.Form["flight-num"], Request.Form["flight-id"]);
+        Flight newFlight = new Flight(Request.Form["flight-status"], Request.Form["flight-num"]);
         newFlight.Save();
         return View["success.cshtml"];
       };
