@@ -40,6 +40,26 @@ namespace Airline
     {
       _flightN = newFlightN;
     }
+    //Overrides
+    public override bool Equals(System.Object otherFlight)
+    {
+      if (!(otherFlight is Flight))
+      {
+        return false;
+      }
+      else
+      {
+        Flight newFlight = (Flight) otherFlight;
+        bool statusEquality = ( newFlight.GetStatus() == this.GetStatus() );
+        bool flightNEquality = (newFlight.GetFlightN() == this.GetFlightN());
+        bool idEquality = ( newFlight.GetId() == this.GetId() );
+        return (idEquality && statusEquality && flightNEquality);
+      }
+    }
+    public override int GetHashCode()
+    {
+      return this.GetStatus().GetHashCode();
+    }
     public static List<Flight> GetAll()
     {
       List<Flight> listFlights = new List<Flight> {};
@@ -108,9 +128,9 @@ namespace Airline
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query="SELECT * FROM flights WHERE id = @id;";
+      string query="SELECT * FROM flights WHERE id = @FlightId;";
       SqlCommand cmd = new SqlCommand (query, conn);
-      SqlParameter idParam = new SqlParameter("@id", id.ToString());
+      SqlParameter idParam = new SqlParameter("@FlightId", id.ToString());
       cmd.Parameters.Add(idParam);
       SqlDataReader rdr = cmd.ExecuteReader();
 
@@ -184,36 +204,74 @@ namespace Airline
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query="DELETE FROM flights WHERE id = @id;";
+      string query="DELETE FROM flights WHERE id = @flightId; DELETE FROM cities_flights WHERE flight_id = @flightId";
       SqlCommand cmd = new SqlCommand (query, conn);
-      SqlParameter idParameter = new SqlParameter("id", this._id );
-      cmd.Parameters.Add(idParameter);
-      SqlDataReader rdr = cmd.ExecuteReader();
+      SqlParameter flightIdParam = new SqlParameter("@flightId", this.GetId());
+
+      cmd.Parameters.Add(flightIdParam);
+      cmd.ExecuteNonQuery();
 
       if (conn != null)
       {
         conn.Close();
       }
     }
-    //Overrides
-   public override bool Equals(System.Object otherFlight)
-   {
-     if (!(otherFlight is Flight))
-     {
-       return false;
-     }
-     else
-     {
-       Flight newFlight = (Flight) otherFlight;
-       bool statusEquality = ( newFlight.GetStatus() == this.GetStatus() );
-       bool flightNEquality = (newFlight.GetFlightN() == this.GetFlightN());
-       bool idEquality = ( newFlight.GetId() == this.GetId() );
-       return (idEquality && statusEquality && flightNEquality);
-     }
-   }
-   public override int GetHashCode()
-   {
-     return this.GetStatus().GetHashCode();
-   }
+
+    //AddCity
+    public void AddCity(City newCity)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities_flights (city_id,flight_id) VALUES (@CityId, @FlightId);", conn);
+      SqlParameter cityIdParameter = new SqlParameter();
+      cityIdParameter.ParameterName = "@CityId";
+      cityIdParameter.Value = newCity.GetId();
+      cmd.Parameters.Add(cityIdParameter);
+
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(flightIdParameter);
+
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    //GetTasks
+    public  List<City> GetCities()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT cities.* FROM flights JOIN cities_flights ON (flights.id = cities_flights.flight_id) JOIN cities ON (cities_flights.city_id = cities.id) WHERE flights.id = @FlightId;", conn);
+
+      SqlParameter flightIdParam = new SqlParameter("@FlightId", this.GetId());
+      cmd.Parameters.Add(flightIdParam);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      List<City> cities = new List<City> {};
+      while (rdr.Read())
+      {
+        int cityId = rdr.GetInt32(0);
+        string cityName = rdr.GetString(1);
+        City newCity = new City(cityName, cityId);
+        cities.Add(newCity);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return cities;
+    }
   }
 }

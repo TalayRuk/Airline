@@ -1,0 +1,12 @@
+<h1>Flight</h1>
+<h2>Add new Flight</h2>
+<hr />
+<form action="/flights/new" method="post">
+  <label for="flight-num">Flight number:</label>
+  <input id="flight-num" name="flight-num" type="text">
+  <label for="flight-status">Flight status :</label>
+  <input id="flight-status" name="flight-status" type="text">
+  <input id='flight-id' name='flight-id' type='hidden' value='@Model["flight"].GetId()'>
+  <button type="submit">Add</button>
+</form>
+<h4><a href="/">Return home</a></h4>

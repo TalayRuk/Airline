@@ -160,16 +160,74 @@ namespace Airline
     //     conn.Close();
     //   }
     // }
+
+    //AddFlight
+    public void AddFlight(Flight newFlight)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities_flights (city_id, flight_id) VALUES (@CityId, @FlightId);", conn);
+
+      SqlParameter cityIdParam = new SqlParameter("@CityId", this.GetId());
+      cmd.Parameters.Add(cityIdParam);
+
+      SqlParameter flightIdParam = new SqlParameter("@FlightId", newFlight.GetId());
+      cmd.Parameters.Add(flightIdParam);
+
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    //GetFlights
+    public List<Flight> GetFlights()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT flights.* FROM cities JOIN cities_flights ON (cities.id = cities_flights.city_id) JOIN flights ON (cities_flights.flight_id = flights.id) WHERE cities.id = @CityId;", conn);
+
+      SqlParameter cityIdParam = new SqlParameter("@CityId", this.GetId());
+      cmd.Parameters.Add(cityIdParam);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      List<Flight> flights = new List<Flight> {};
+
+      while (rdr.Read())
+      {
+        int flightId = rdr.GetInt32(0);
+        string flightStatus = rdr.GetString(1);
+        string flightN = rdr.GetString(2);
+        Flight newFlight = new Flight(flightStatus, flightN, flightId);
+        flights.Add(newFlight);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return flights;
+    }
+
     public void Delete()
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      string query="DELETE FROM cities WHERE id = @id;";
+      string query="DELETE FROM cities WHERE id = @CityId; DELETE FROM cities_flights WHERE city_id = @CityId;";
       SqlCommand cmd = new SqlCommand (query, conn);
-      SqlParameter idParameter = new SqlParameter("id", this._id );
-      cmd.Parameters.Add(idParameter);
-      SqlDataReader rdr = cmd.ExecuteReader();
+      SqlParameter cityIdParameter = new SqlParameter("@CityId", this.GetId() );
+
+      cmd.Parameters.Add(cityIdParameter);
+      cmd.ExecuteNonQuery();
 
       if (conn != null)
       {
@@ -194,6 +252,7 @@ namespace Airline
        return ( idEquality && nameEquality);
      }
    }
+
    public override int GetHashCode()
    {
      return this.GetName().GetHashCode();

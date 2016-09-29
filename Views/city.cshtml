@@ -1,0 +1,26 @@
+<h1>City</h1>
+<h2>City: @Model["city"].GetName()</h2>
+<hr />
+@if (@Model["citynames"].Count != 0)
+{
+  <h4>There are these Flights in the city:</h4>
+  <ul>
+    @foreach (var flight in @Model["citynames"])
+    {
+      <li>@flight.GetFlightN()</li>
+    }
+  </ul>
+}
+<h4>Add a flight to the city:</h4>
+<form action='/city/add_flight' method='post'>
+  <input id='city-id' name='city-id' type='hidden' value='@Model["city"].GetId()'>
+  <label for='flight-id'>Select a flight</label>
+  <select id='flight-id' name='flight-id' type='text'>
+    @foreach (var flight in @Model["allflights"])
+    {
+      <option value='@flight.GetId()'>@flight.GetFlightN()</option>
+    }
+  </select>
+  <button type='submit'>Add</button>
+</form>
+<p><a href="/">Return to Main Page</a></p>

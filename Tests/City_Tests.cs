@@ -93,6 +93,70 @@ namespace Airline
       Assert.Equal(testCity, result);
     }
 
+    [Fact]
+    public void T7_AddFlight_AddFlightToCity()
+    {
+      //Arrange
+      City testCity = new City("Seattle2");
+      testCity.Save();
+
+      Flight flightTest = new Flight("ontime","fl001");
+      flightTest.Save();
+
+      //Act
+      testCity.AddFlight(flightTest);
+
+      List<Flight> result = testCity.GetFlights();
+      List<Flight> testList = new List<Flight> {flightTest};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void T8_GetFlights_ReturnAllCitiesFlights()
+    {
+      //Arrange
+      City testCity = new City("Seattle3");
+      testCity.Save();
+
+      Flight flightTest = new Flight("ontime","fl003");
+      flightTest.Save();
+
+      Flight flightTest1 = new Flight("ontime","fl004");
+      flightTest1.Save();
+
+      //Act
+      testCity.AddFlight(flightTest);
+      List<Flight> result = testCity.GetFlights();
+      List<Flight> testList = new List<Flight> {flightTest};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void T9_Delete_DeletesCitiesFromDB()
+    {
+      //Arrange
+      Flight testFlight = new Flight("ontime","fl003");
+      testFlight.Save();
+
+      string testName = "Seattle1";
+      City testCity = new City(testName);
+      testCity.Save();
+
+      //Act
+      testCity.AddFlight(testFlight);
+      testCity.Delete();
+
+      List<City> resultFlightCities = testFlight.GetCities();
+      List<City> testFlightCities = new List<City> {};
+
+      //Assert
+      Assert.Equal(testFlightCities, resultFlightCities);
+    }
+
     public void Dispose()
     {
       City.DeleteAll();
